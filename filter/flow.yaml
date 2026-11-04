@@ -1,0 +1,39 @@
+metadata:
+  id: offline-mcp-synthesis-filter
+  name: Offline MCP Synthesis Filter
+  description: Keep rows whose review says they are consistent and whose score meets the threshold.
+  version: "1.0.0"
+  author: MCP Training Synthesis
+  license: Apache-2.0
+  recommended_models:
+    default: openai/gpt-oss-120b
+    compatible:
+      - openai/gpt-4o
+    experimental: []
+  tags:
+    - tool-calling
+    - synthetic-data
+    - offline
+  dataset_requirements:
+    required_columns:
+      - candidate_id
+      - record
+      - quality_consistent
+      - quality_score
+      - quality_reason
+    min_samples: 1
+    description: Graded candidates. The score threshold is overridden at runtime.
+
+blocks:
+  - block_type: ColumnValueFilterBlock
+    block_config:
+      block_name: keep_consistent
+      input_cols: quality_consistent
+      operation: eq
+      filter_value: true
+  - block_type: ColumnValueFilterBlock
+    block_config:
+      block_name: keep_high_quality
+      input_cols: quality_score
+      operation: ge
+      filter_value: 0.8

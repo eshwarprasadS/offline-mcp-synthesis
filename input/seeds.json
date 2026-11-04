@@ -1,0 +1,7 @@
+[
+  "List all paid orders and tell me which ones we can fulfill from current stock.",
+  "Look up order ORD-1001, check inventory for its SKU, and create a UPS shipment if possible.",
+  "Can we ship ORD-1002 today? Check inventory and create a FedEx shipment if stock allows.",
+  "Why can't we ship ORD-1003 yet? Inspect the order and inventory.",
+  "Summarize on-hand inventory for every SKU referenced by paid orders."
+]

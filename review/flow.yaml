@@ -1,0 +1,63 @@
+metadata:
+  id: offline-mcp-synthesis-review
+  name: Offline MCP Synthesis Review
+  description: >-
+    Score one simulated tool-calling transcript for internal consistency.
+    The teacher does not execute tools.
+  version: "1.0.0"
+  author: MCP Training Synthesis
+  license: Apache-2.0
+  recommended_models:
+    default: openai/gpt-oss-120b
+    compatible:
+      - openai/gpt-4o
+    experimental: []
+  tags:
+    - tool-calling
+    - synthetic-data
+    - offline
+  dataset_requirements:
+    required_columns:
+      - candidate_id
+      - candidate_json
+      - tool_schema
+    min_samples: 1
+    description: One structurally valid candidate per row.
+
+blocks:
+  - block_type: PromptBuilderBlock
+    block_config:
+      block_name: build_review_prompt
+      input_cols:
+        - candidate_json
+        - tool_schema
+      output_cols: review_prompt
+      prompt_config_path: prompts/review.yaml
+  - block_type: LLMChatBlock
+    block_config:
+      block_name: review_conversation
+      input_cols: review_prompt
+      output_cols: review_response
+      async_mode: false
+      temperature: 0.0
+      max_tokens: 1500
+      timeout: 180
+      num_retries: 2
+      response_format:
+        type: json_object
+  - block_type: LLMResponseExtractorBlock
+    block_config:
+      block_name: extract_review
+      input_cols: review_response
+      extract_content: true
+      expand_lists: false
+  - block_type: JSONParserBlock
+    block_config:
+      block_name: parse_review
+      input_cols: extract_review_content
+      output_cols:
+        - score
+        - consistent
+        - reason
+      extract_embedded: true
+      fix_trailing_commas: true

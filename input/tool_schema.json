@@ -1,0 +1,80 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "list_orders",
+      "description": "List orders, optionally filtered by status.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": ["string", "null"],
+            "description": "Filter by status: paid | pending | shipped",
+            "default": null
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_order",
+      "description": "Fetch a single order by ID.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "description": "Order ID, e.g. ORD-1001"
+          }
+        },
+        "required": ["order_id"],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "check_inventory",
+      "description": "Check on-hand inventory for a SKU.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "description": "Product SKU, e.g. SKU-LAP-14"
+          }
+        },
+        "required": ["sku"],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "create_shipment",
+      "description": "Create a shipment for a paid order if inventory is available.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "description": "Order ID to ship"
+          },
+          "carrier": {
+            "type": "string",
+            "description": "Carrier name, e.g. UPS or FedEx",
+            "default": "UPS"
+          }
+        },
+        "required": ["order_id"],
+        "additionalProperties": false
+      }
+    }
+  }
+]

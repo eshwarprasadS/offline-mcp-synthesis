@@ -1,0 +1,62 @@
+metadata:
+  id: offline-mcp-synthesis
+  name: Offline MCP Synthesis
+  description: >-
+    Generate simulated tool-calling conversations from sample transcripts,
+    seed queries, a system prompt, and a tool schema. No tools are executed.
+  version: "1.0.0"
+  author: MCP Training Synthesis
+  license: Apache-2.0
+  recommended_models:
+    default: openai/gpt-oss-120b
+    compatible:
+      - openai/gpt-4o
+    experimental: []
+  tags:
+    - tool-calling
+    - synthetic-data
+    - offline
+  dataset_requirements:
+    required_columns:
+      - seed_id
+      - seed_query
+      - tool_schema
+      - system_prompt
+      - references
+    min_samples: 1
+    description: One row per seed query, with the tool schema, system prompt, and sample conversations.
+
+blocks:
+  - block_type: RowMultiplierBlock
+    block_config:
+      block_name: expand_seeds
+      num_samples: 2
+      shuffle: false
+  - block_type: PromptBuilderBlock
+    block_config:
+      block_name: build_synthesis_prompt
+      input_cols:
+        - seed_query
+        - tool_schema
+        - system_prompt
+        - references
+      output_cols: synthesis_prompt
+      prompt_config_path: prompts/synthesize.yaml
+  - block_type: LLMChatBlock
+    block_config:
+      block_name: generate_conversation
+      input_cols: synthesis_prompt
+      output_cols: teacher_response
+      async_mode: false
+      temperature: 0.7
+      max_tokens: 6000
+      timeout: 180
+      num_retries: 2
+      response_format:
+        type: json_object
+  - block_type: LLMResponseExtractorBlock
+    block_config:
+      block_name: extract_conversation
+      input_cols: teacher_response
+      extract_content: true
+      expand_lists: false
